@@ -24,11 +24,11 @@ public interface DockerService {
 
     List<Map<String, String>> createContainer(CreateContainerDTO request);
 
+    List<Map<String, String>> listImages();
+
+    List<Map<String, String>> removeImage(String imageId) throws IOException;
+
     List<Map<String, String>> pushImage(String image);
 
     List<Map<String, String>> pullImage(String image);
-
-    List<Map<String, String>> listImages();
-
-    List<Map<String, String>> removeImage(String image) throws IOException;
 }

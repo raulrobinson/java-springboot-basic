@@ -6,7 +6,7 @@ Service for Docker Command Management
 
 For building and running the application you need:
 
-- [JDK 11](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
+- [JDK 11](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html) or later
 - [Maven 3](https://maven.apache.org)
 - [Docker](https://www.docker.com/products/docker-desktop)
 - [Docker Compose](https://docs.docker.com/compose/install/)

@@ -366,8 +366,8 @@ public class DockerServiceImpl implements DockerService {
     }
 
     @Override
-    public List<Map<String, String>> removeImage(String image_id) throws IOException {
-        String command = "docker rmi " + image_id;
+    public List<Map<String, String>> removeImage(String imageId) throws IOException {
+        String command = "docker rmi " + imageId;
         Process process = Runtime.getRuntime().exec(command);
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
@@ -375,7 +375,7 @@ public class DockerServiceImpl implements DockerService {
             List<Map<String, String>> containers = new ArrayList<>();
             HashMap<String, String> container = new HashMap<>();
             if (result != null && !result.isEmpty()) {
-                container.put("image", image_id);
+                container.put("image", imageId);
                 container.put("status", "removed");
                 container.put("timestamp", generateIsoTimestamp());
                 containers.add(container);
@@ -387,7 +387,7 @@ public class DockerServiceImpl implements DockerService {
                 return containers;
             }
         } catch (Exception e) {
-            logger.error("Error al eliminar la imagen {}", image_id, e);
+            logger.error("Error al eliminar la imagen {}", imageId, e);
             return null;
         }
     }
