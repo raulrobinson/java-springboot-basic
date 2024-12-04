@@ -1,6 +1,8 @@
 package com.rasysbox.ws.controller;
 
+import com.rasysbox.ws.models.dto.ContainerDTO;
 import com.rasysbox.ws.models.dto.CreateContainerDTO;
+import com.rasysbox.ws.models.dto.ImageDTO;
 import com.rasysbox.ws.models.dto.StatsDTO;
 import com.rasysbox.ws.service.DockerService;
 import io.swagger.annotations.Api;
@@ -52,51 +54,51 @@ public class DockerController {
         return ResponseEntity.ok(container);
     }
 
-    @GetMapping("/logs/{containerId}")
+    @PostMapping("/logs")
     @ApiOperation(value = "Get container logs", notes = "Get container logs")
-    public ResponseEntity<List<Map<String, String>>> getContainerLogs(@PathVariable String containerId) {
-        var logs = service.getContainerLogs(containerId);
+    public ResponseEntity<List<Map<String, String>>> getContainerLogs(@RequestBody ContainerDTO container) {
+        var logs = service.getContainerLogs(container.getContainerId());
         if (logs.isEmpty()) {
-            logger.info("No logs found for container {}", containerId);
+            logger.info("No logs found for container {}", container.getContainerId());
             return ResponseEntity.noContent().build();
         }
-        logger.info("Getting logs for container {}", containerId);
+        logger.info("Getting logs for container {}", container.getContainerId());
         return ResponseEntity.ok(logs);
     }
 
-    @PostMapping("/stop/{containerId}")
+    @PostMapping("/stop")
     @ApiOperation(value = "Stop container", notes = "Stop container")
-    public ResponseEntity<List<Map<String, String>>> stopContainer(@PathVariable String containerId) {
-        var result = service.stopContainer(containerId);
+    public ResponseEntity<List<Map<String, String>>> stopContainer(@RequestBody ContainerDTO container) {
+        var result = service.stopContainer(container.getContainerId());
         if (result.isEmpty()) {
-            logger.info("Container id for stop {} not found", containerId);
+            logger.info("Container id for stop {} not found", container.getContainerId());
             return ResponseEntity.notFound().build();
         }
-        logger.info("Container {} stopped", containerId);
+        logger.info("Container {} stopped", container.getContainerId());
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/start/{containerId}")
+    @PostMapping("/start")
     @ApiOperation(value = "Start container", notes = "Start container")
-    public ResponseEntity<List<Map<String, String>>> startContainer(@PathVariable String containerId) {
-        var result = service.startContainer(containerId);
+    public ResponseEntity<List<Map<String, String>>> startContainer(@RequestBody ContainerDTO container) {
+        var result = service.startContainer(container.getContainerId());
         if (result.isEmpty()) {
-            logger.info("Container id for start {} not found", containerId);
+            logger.info("Container id for start {} not found", container.getContainerId());
             return ResponseEntity.notFound().build();
         }
-        logger.info("Container {} started", containerId);
+        logger.info("Container {} started", container.getContainerId());
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/stats/{containerId}")
+    @PostMapping("/stats")
     @ApiOperation(value = "Get container stats", notes = "Get container stats")
-    public ResponseEntity<List<StatsDTO>> getContainerStats(@PathVariable String containerId) {
-        var stats = service.getContainerStats(containerId);
+    public ResponseEntity<List<StatsDTO>> getContainerStats(@RequestBody ContainerDTO container) {
+        var stats = service.getContainerStats(container.getContainerId());
         if (stats.isEmpty()) {
-            logger.info("No stats found for container {}", containerId);
+            logger.info("No stats found for container {}", container.getContainerId());
             return ResponseEntity.noContent().build();
         }
-        logger.info("Getting stats for container {}", containerId);
+        logger.info("Getting stats for container {}", container.getContainerId());
         return ResponseEntity.ok(stats);
     }
 
@@ -124,27 +126,27 @@ public class DockerController {
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/remove/{containerId}")
+    @DeleteMapping("/remove")
     @ApiOperation(value = "Remove container", notes = "Remove container")
-    public ResponseEntity<List<Map<String, String>>> removeContainer(@PathVariable String containerId) throws IOException {
-        var result = service.removeContainer(containerId);
+    public ResponseEntity<List<Map<String, String>>> removeContainer(@RequestBody ContainerDTO container) throws IOException {
+        var result = service.removeContainer(container.getContainerId());
         if (result.isEmpty()) {
-            logger.info("Container id for remove {} not found", containerId);
+            logger.info("Container id for remove {} not found", container.getContainerId());
             return ResponseEntity.notFound().build();
         }
-        logger.info("Container {} removed", containerId);
+        logger.info("Container {} removed", container.getContainerId());
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/remove-image/{imageId}")
+    @DeleteMapping("/remove-image")
     @ApiOperation(value = "Remove image", notes = "Remove image")
-    public ResponseEntity<List<Map<String, String>>> removeImage(@PathVariable String imageId) throws IOException {
-        var result = service.removeImage(imageId);
+    public ResponseEntity<List<Map<String, String>>> removeImage(@RequestBody ImageDTO image) throws IOException {
+        var result = service.removeImage(image.getImageId());
         if (result.isEmpty()) {
-            logger.info("Image {} not removed", imageId);
+            logger.info("Image {} not removed", image.getImageId());
             return ResponseEntity.notFound().build();
         }
-        logger.info("Image {} removed", imageId);
+        logger.info("Image {} removed", image.getImageId());
         return ResponseEntity.ok(result);
     }
 }
