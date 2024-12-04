@@ -124,7 +124,7 @@ public class DockerController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/remove/{containerId}")
+    @DeleteMapping("/remove/{containerId}")
     @ApiOperation(value = "Remove container", notes = "Remove container")
     public ResponseEntity<List<Map<String, String>>> removeContainer(@PathVariable String containerId) throws IOException {
         var result = service.removeContainer(containerId);

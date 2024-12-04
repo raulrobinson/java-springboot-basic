@@ -317,6 +317,9 @@ public class DockerServiceImpl implements DockerService {
                 containers.add(container);
                 return containers;
             } else {
+                container.put("status", "container not found");
+                container.put("timestamp", generateIsoTimestamp());
+                containers.add(container);
                 return containers;
             }
         } catch (Exception e) {
