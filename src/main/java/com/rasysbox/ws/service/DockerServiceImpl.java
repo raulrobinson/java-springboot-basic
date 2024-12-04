@@ -328,44 +328,6 @@ public class DockerServiceImpl implements DockerService {
         }
     }
 
-    // ----------------------------------------------------------------------------------------------------
-
-    @Override
-    public List<Map<String, String>> pushImage(String image) {
-        try {
-            Process process = new ProcessBuilder("docker", "push", image).start();
-            process.waitFor();
-            List<Map<String, String>> images = new ArrayList<>();
-            HashMap<String, String> img = new HashMap<>();
-            img.put("image", image);
-            img.put("status", "pushed");
-            img.put("timestamp", generateIsoTimestamp());
-            images.add(img);
-            return images;
-        } catch (Exception e) {
-            logger.error("Error al subir la imagen {}", image, e);
-            return null;
-        }
-    }
-
-    @Override
-    public List<Map<String, String>> pullImage(String image) {
-        try {
-            Process process = new ProcessBuilder("docker", "pull", image).start();
-            process.waitFor();
-            List<Map<String, String>> images = new ArrayList<>();
-            HashMap<String, String> img = new HashMap<>();
-            img.put("image", image);
-            img.put("status", "pulled");
-            img.put("timestamp", generateIsoTimestamp());
-            images.add(img);
-            return images;
-        } catch (Exception e) {
-            logger.error("Error al descargar la imagen {}", image, e);
-            return null;
-        }
-    }
-
     @Override
     public List<Map<String, String>> listImages() {
         List<Map<String, String>> images = new ArrayList<>();
@@ -404,19 +366,66 @@ public class DockerServiceImpl implements DockerService {
     }
 
     @Override
-    public List<Map<String, String>> removeImage(String image) {
+    public List<Map<String, String>> removeImage(String image_id) throws IOException {
+        String command = "docker rmi " + image_id;
+        Process process = Runtime.getRuntime().exec(command);
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String result = reader.readLine();
+            List<Map<String, String>> containers = new ArrayList<>();
+            HashMap<String, String> container = new HashMap<>();
+            if (result != null && !result.isEmpty()) {
+                container.put("image", image_id);
+                container.put("status", "removed");
+                container.put("timestamp", generateIsoTimestamp());
+                containers.add(container);
+                return containers;
+            } else {
+                container.put("status", "image not found");
+                container.put("timestamp", generateIsoTimestamp());
+                containers.add(container);
+                return containers;
+            }
+        } catch (Exception e) {
+            logger.error("Error al eliminar la imagen {}", image_id, e);
+            return null;
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------------------
+
+    @Override
+    public List<Map<String, String>> pushImage(String image) {
         try {
-            Process process = new ProcessBuilder("docker", "rmi", image).start();
+            Process process = new ProcessBuilder("docker", "push", image).start();
             process.waitFor();
             List<Map<String, String>> images = new ArrayList<>();
             HashMap<String, String> img = new HashMap<>();
             img.put("image", image);
-            img.put("status", "removed");
+            img.put("status", "pushed");
             img.put("timestamp", generateIsoTimestamp());
             images.add(img);
             return images;
         } catch (Exception e) {
-            logger.error("Error al eliminar la imagen {}", image, e);
+            logger.error("Error al subir la imagen {}", image, e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<Map<String, String>> pullImage(String image) {
+        try {
+            Process process = new ProcessBuilder("docker", "pull", image).start();
+            process.waitFor();
+            List<Map<String, String>> images = new ArrayList<>();
+            HashMap<String, String> img = new HashMap<>();
+            img.put("image", image);
+            img.put("status", "pulled");
+            img.put("timestamp", generateIsoTimestamp());
+            images.add(img);
+            return images;
+        } catch (Exception e) {
+            logger.error("Error al descargar la imagen {}", image, e);
             return null;
         }
     }

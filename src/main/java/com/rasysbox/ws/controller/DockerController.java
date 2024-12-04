@@ -135,4 +135,16 @@ public class DockerController {
         logger.info("Container {} removed", containerId);
         return ResponseEntity.ok(result);
     }
+
+    @DeleteMapping("/remove-image/{image_id}")
+    @ApiOperation(value = "Remove image", notes = "Remove image")
+    public ResponseEntity<List<Map<String, String>>> removeImage(@PathVariable String image_id) throws IOException {
+        var result = service.removeImage(image_id);
+        if (result.isEmpty()) {
+            logger.info("Image {} not removed", image_id);
+            return ResponseEntity.notFound().build();
+        }
+        logger.info("Image {} removed", image_id);
+        return ResponseEntity.ok(result);
+    }
 }

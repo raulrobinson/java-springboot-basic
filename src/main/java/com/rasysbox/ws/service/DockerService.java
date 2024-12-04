@@ -30,5 +30,5 @@ public interface DockerService {
 
     List<Map<String, String>> listImages();
 
-    List<Map<String, String>> removeImage(String image);
+    List<Map<String, String>> removeImage(String image) throws IOException;
 }
