@@ -1,9 +1,6 @@
 package com.rasysbox.ws.service;
 
-import com.rasysbox.ws.dto.StatsBlockIoDTO;
-import com.rasysbox.ws.dto.StatsDTO;
-import com.rasysbox.ws.dto.StatsMemUsageLimitDTO;
-import com.rasysbox.ws.dto.StatsNetIoDTO;
+import com.rasysbox.ws.dto.*;
 import com.rasysbox.ws.utils.ExecutorCommand;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -272,6 +269,43 @@ public class DockerServiceImpl implements DockerService {
         }
     }
 
+    @Override
+    public List<Map<String, String>> listImages() {
+        List<Map<String, String>> images = new ArrayList<>();
+        try {
+            Process process = new ProcessBuilder("docker", "images").start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+
+            String[] headers = null;
+            if ((line = reader.readLine()) != null) {
+                headers = line.split("\\s{2,}");
+                // Convertir encabezados a minúsculas y reemplazar espacios por _
+                for (int i = 0; i < headers.length; i++) {
+                    headers[i] = headers[i].trim().toLowerCase().replace(" ", "_");
+                }
+            }
+
+            // Leer las siguientes líneas como datos
+            while ((line = reader.readLine()) != null && headers != null) {
+                String[] values = line.split("\\s{2,}");
+                Map<String, String> image = new HashMap<>();
+                for (int i = 0; i < headers.length && i < values.length; i++) {
+                    String key = headers[i];
+                    String value = values[i].trim();
+                    image.put("timestamp", generateIsoTimestamp());
+                    image.put(key, value);
+                }
+                images.add(image);
+            }
+
+        } catch (Exception e) {
+            logger.error("Error al listar las imágenes", e);
+        }
+
+        return images;
+    }
+
     // ----------------------------
 
     @Override
@@ -293,10 +327,7 @@ public class DockerServiceImpl implements DockerService {
     }
 
     @Override
-    public List<Map<String, String>> createContainer(
-            String image,
-            HashMap<String, String> envs,
-            HashMap<String, String> ports) {
+    public List<Map<String, String>> createContainer(CreateContainerDTO request) {
         try {
             List<String> command = new ArrayList<>();
             command.add("docker");
@@ -305,10 +336,10 @@ public class DockerServiceImpl implements DockerService {
             command.add("--name");
             command.add(UUID.randomUUID().toString());
             command.add("-p");
-            command.add(ports.get("host") + ":" + ports.get("container"));
+            command.add(request.getPorts().get("host") + ":" + request.getPorts().get("container"));
             command.add("-e");
-            command.add(envs.get("key") + "=" + envs.get("value"));
-            command.add(image);
+            command.add(request.getEnvs().get("key") + "=" + request.getEnvs().get("value"));
+            command.add(request.getImage());
             Process process = new ProcessBuilder(command).start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String containerId = reader.readLine();
@@ -320,7 +351,7 @@ public class DockerServiceImpl implements DockerService {
             containers.add(container);
             return containers;
         } catch (Exception e) {
-            logger.error("Error al crear el contenedor de la imagen {}", image, e);
+            logger.error("Error al crear el contenedor de la imagen {}", request.getImage(), e);
             return null;
         }
     }
@@ -362,43 +393,6 @@ public class DockerServiceImpl implements DockerService {
     }
 
     @Override
-    public List<Map<String, String>> listImages() {
-        List<Map<String, String>> images = new ArrayList<>();
-        try {
-            Process process = new ProcessBuilder("docker", "images").start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-
-            String[] headers = null;
-            if ((line = reader.readLine()) != null) {
-                headers = line.split("\\s{2,}");
-                // Convertir encabezados a minúsculas y reemplazar espacios por _
-                for (int i = 0; i < headers.length; i++) {
-                    headers[i] = headers[i].trim().toLowerCase().replace(" ", "_");
-                }
-            }
-
-            // Leer las siguientes líneas como datos
-            while ((line = reader.readLine()) != null && headers != null) {
-                String[] values = line.split("\\s{2,}");
-                Map<String, String> image = new HashMap<>();
-                for (int i = 0; i < headers.length && i < values.length; i++) {
-                    String key = headers[i];
-                    String value = values[i].trim();
-                    image.put("timestamp", generateIsoTimestamp());
-                    image.put(key, value);
-                }
-                images.add(image);
-            }
-
-        } catch (Exception e) {
-            logger.error("Error al listar las imágenes", e);
-        }
-
-        return images;
-    }
-
-    @Override
     public List<Map<String, String>> removeImage(String image) {
         try {
             Process process = new ProcessBuilder("docker", "rmi", image).start();
@@ -415,44 +409,4 @@ public class DockerServiceImpl implements DockerService {
             return null;
         }
     }
-
-//    public String getContainerId(String containerName) {
-//        try {
-//            Process process = new ProcessBuilder("docker", "ps", "-a", "-q", "-f", "name=" + containerName).start();
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-//            return reader.readLine();
-//        } catch (Exception e) {
-//            logger.error("Error al obtener el id del contenedor {}", containerName, e);
-//            return null;
-//        }
-//    }
-
-//    public void pullImage(String image) {
-//        try {
-//            Process process = new ProcessBuilder("docker", "pull", image).start();
-//            process.waitFor();
-//        } catch (Exception e) {
-//            logger.error("Error al descargar la imagen {}", image, e);
-//        }
-//    }
-
-//    public void removeContainer(String containerId) {
-//        try {
-//            Process process = new ProcessBuilder("docker", "rm", containerId).start();
-//            process.waitFor();
-//        } catch (Exception e) {
-//            logger.error("Error al eliminar el contenedor {}", containerId, e);
-//        }
-//    }
-
-//    public String createContainer(String image) {
-//        try {
-//            Process process = new ProcessBuilder("docker", "run", "-d", image).start();
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-//            return reader.readLine();
-//        } catch (Exception e) {
-//            logger.error("Error al crear el contenedor de la imagen {}", image, e);
-//            return null;
-//        }
-//    }
 }

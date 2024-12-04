@@ -1,5 +1,6 @@
 package com.rasysbox.ws.service;
 
+import com.rasysbox.ws.dto.CreateContainerDTO;
 import com.rasysbox.ws.dto.StatsDTO;
 
 import java.util.HashMap;
@@ -21,10 +22,7 @@ public interface DockerService {
 
     List<Map<String, String>> removeContainer(String containerId);
 
-    List<Map<String, String>> createContainer(
-            String image,
-            HashMap<String, String> envs,
-            HashMap<String, String> ports);
+    List<Map<String, String>> createContainer(CreateContainerDTO request);
 
     List<Map<String, String>> pushImage(String image);
 

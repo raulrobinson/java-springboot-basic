@@ -1,5 +1,6 @@
 package com.rasysbox.ws.controller;
 
+import com.rasysbox.ws.dto.CreateContainerDTO;
 import com.rasysbox.ws.dto.StatsDTO;
 import com.rasysbox.ws.service.DockerService;
 import io.swagger.annotations.Api;
@@ -10,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -96,5 +98,29 @@ public class DockerController {
         }
         logger.info("Getting stats for container {}", containerId);
         return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/images")
+    @ApiOperation(value = "List all images", notes = "List all images")
+    public ResponseEntity<List<Map<String, String>>> getImages() {
+        var images = service.listImages();
+        if (images.isEmpty()) {
+            logger.info("No images found, Docker is empty or not running");
+            return ResponseEntity.noContent().build();
+        }
+        logger.info("Getting total {} images", images.size());
+        return ResponseEntity.ok(images);
+    }
+
+    @PostMapping("/create-container")
+    @ApiOperation(value = "Create container", notes = "Create container")
+    public ResponseEntity<List<Map<String, String>>> createContainer(@RequestBody CreateContainerDTO request) {
+        var result = service.createContainer(request);
+        if (result.isEmpty()) {
+            logger.info("Container {} not created", request.getImage());
+            return ResponseEntity.notFound().build();
+        }
+        logger.info("Container {} created", request.getImage());
+        return ResponseEntity.ok(result);
     }
 }
