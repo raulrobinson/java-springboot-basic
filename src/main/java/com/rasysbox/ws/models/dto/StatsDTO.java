@@ -1,4 +1,4 @@
-package com.rasysbox.ws.dto;
+package com.rasysbox.ws.models.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

@@ -1,7 +1,7 @@
 package com.rasysbox.ws.controller;
 
-import com.rasysbox.ws.dto.CreateContainerDTO;
-import com.rasysbox.ws.dto.StatsDTO;
+import com.rasysbox.ws.models.dto.CreateContainerDTO;
+import com.rasysbox.ws.models.dto.StatsDTO;
 import com.rasysbox.ws.service.DockerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -117,10 +117,22 @@ public class DockerController {
     public ResponseEntity<List<Map<String, String>>> createContainer(@RequestBody CreateContainerDTO request) {
         var result = service.createContainer(request);
         if (result.isEmpty()) {
-            logger.info("Container {} not created", request.getImage());
+            logger.info("Container {} not created", request.getContainerName());
             return ResponseEntity.notFound().build();
         }
-        logger.info("Container {} created", request.getImage());
+        logger.info("Container {} created", request.getContainerName());
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/remove/{containerId}")
+    @ApiOperation(value = "Remove container", notes = "Remove container")
+    public ResponseEntity<List<Map<String, String>>> removeContainer(@PathVariable String containerId) throws IOException {
+        var result = service.removeContainer(containerId);
+        if (result.isEmpty()) {
+            logger.info("Container id for remove {} not found", containerId);
+            return ResponseEntity.notFound().build();
+        }
+        logger.info("Container {} removed", containerId);
         return ResponseEntity.ok(result);
     }
 }

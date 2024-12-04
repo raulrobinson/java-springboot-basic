@@ -1,9 +1,9 @@
 package com.rasysbox.ws.service;
 
-import com.rasysbox.ws.dto.CreateContainerDTO;
-import com.rasysbox.ws.dto.StatsDTO;
+import com.rasysbox.ws.models.dto.CreateContainerDTO;
+import com.rasysbox.ws.models.dto.StatsDTO;
 
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +20,7 @@ public interface DockerService {
 
     List<StatsDTO> getContainerStats(String containerId);
 
-    List<Map<String, String>> removeContainer(String containerId);
+    List<Map<String, String>> removeContainer(String containerId) throws IOException;
 
     List<Map<String, String>> createContainer(CreateContainerDTO request);
 

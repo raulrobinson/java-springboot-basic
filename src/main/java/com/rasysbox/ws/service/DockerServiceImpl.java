@@ -1,12 +1,13 @@
 package com.rasysbox.ws.service;
 
-import com.rasysbox.ws.dto.*;
+import com.rasysbox.ws.models.dto.*;
 import com.rasysbox.ws.utils.ExecutorCommand;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
@@ -270,91 +271,61 @@ public class DockerServiceImpl implements DockerService {
     }
 
     @Override
-    public List<Map<String, String>> listImages() {
-        List<Map<String, String>> images = new ArrayList<>();
+    public List<Map<String, String>> createContainer(CreateContainerDTO request) {
         try {
-            Process process = new ProcessBuilder("docker", "images").start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
+            StringBuilder command = new StringBuilder("docker run -d --name " + request.getContainerName());
 
-            String[] headers = null;
-            if ((line = reader.readLine()) != null) {
-                headers = line.split("\\s{2,}");
-                // Convertir encabezados a minúsculas y reemplazar espacios por _
-                for (int i = 0; i < headers.length; i++) {
-                    headers[i] = headers[i].trim().toLowerCase().replace(" ", "_");
-                }
+            // Add ports mapping.
+            for (PortsDTO.PortMapping portMapping : request.getPorts().getPortMappings()) {
+                command.append(" -p ")
+                        .append(portMapping.getHostPort())
+                        .append(":")
+                        .append(portMapping.getContainerPort());
             }
 
-            // Leer las siguientes líneas como datos
-            while ((line = reader.readLine()) != null && headers != null) {
-                String[] values = line.split("\\s{2,}");
-                Map<String, String> image = new HashMap<>();
-                for (int i = 0; i < headers.length && i < values.length; i++) {
-                    String key = headers[i];
-                    String value = values[i].trim();
-                    image.put("timestamp", generateIsoTimestamp());
-                    image.put(key, value);
-                }
-                images.add(image);
+            // Add environment variables.
+            for (EnvsDTO.EnvVariable variable : request.getEnvs().getVariables()) {
+                command.append(" -e ")
+                        .append(variable.getKey())
+                        .append("=")
+                        .append(variable.getValue());
             }
 
+            // Add image name.
+            command.append(" ").append(request.getImage());
+
+            return executorCommand.createDockerContainer(command.toString());
         } catch (Exception e) {
-            logger.error("Error al listar las imágenes", e);
+            logger.error("Error al crear el contenedor de la imagen {}", request.getImage(), e);
+            return null;
         }
-
-        return images;
     }
 
-    // ----------------------------
-
     @Override
-    public List<Map<String, String>> removeContainer(String containerId) {
-        try {
-            Process process = new ProcessBuilder("docker", "rm", containerId).start();
-            process.waitFor();
+    public List<Map<String, String>> removeContainer(String containerId) throws IOException {
+        String command = "docker rm -f " + containerId;
+        Process process = Runtime.getRuntime().exec(command);
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String result = reader.readLine();
             List<Map<String, String>> containers = new ArrayList<>();
             HashMap<String, String> container = new HashMap<>();
-            container.put("container_id", containerId);
-            container.put("status", "removed");
-            container.put("timestamp", generateIsoTimestamp());
-            containers.add(container);
-            return containers;
+            if (result != null && !result.isEmpty()) {
+                container.put("container_id", containerId);
+                container.put("status", "removed");
+                container.put("timestamp", generateIsoTimestamp());
+                containers.add(container);
+                return containers;
+            } else {
+                return containers;
+            }
         } catch (Exception e) {
             logger.error("Error al eliminar el contenedor {}", containerId, e);
             return null;
         }
     }
 
-    @Override
-    public List<Map<String, String>> createContainer(CreateContainerDTO request) {
-        try {
-            List<String> command = new ArrayList<>();
-            command.add("docker");
-            command.add("run");
-            command.add("-d");
-            command.add("--name");
-            command.add(UUID.randomUUID().toString());
-            command.add("-p");
-            command.add(request.getPorts().get("host") + ":" + request.getPorts().get("container"));
-            command.add("-e");
-            command.add(request.getEnvs().get("key") + "=" + request.getEnvs().get("value"));
-            command.add(request.getImage());
-            Process process = new ProcessBuilder(command).start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String containerId = reader.readLine();
-            List<Map<String, String>> containers = new ArrayList<>();
-            HashMap<String, String> container = new HashMap<>();
-            container.put("container_id", containerId);
-            container.put("status", "created");
-            container.put("timestamp", generateIsoTimestamp());
-            containers.add(container);
-            return containers;
-        } catch (Exception e) {
-            logger.error("Error al crear el contenedor de la imagen {}", request.getImage(), e);
-            return null;
-        }
-    }
+    // ----------------------------------------------------------------------------------------------------
 
     @Override
     public List<Map<String, String>> pushImage(String image) {
@@ -390,6 +361,43 @@ public class DockerServiceImpl implements DockerService {
             logger.error("Error al descargar la imagen {}", image, e);
             return null;
         }
+    }
+
+    @Override
+    public List<Map<String, String>> listImages() {
+        List<Map<String, String>> images = new ArrayList<>();
+        try {
+            Process process = new ProcessBuilder("docker", "images").start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+
+            String[] headers = null;
+            if ((line = reader.readLine()) != null) {
+                headers = line.split("\\s{2,}");
+                // Convertir encabezados a minúsculas y reemplazar espacios por _
+                for (int i = 0; i < headers.length; i++) {
+                    headers[i] = headers[i].trim().toLowerCase().replace(" ", "_");
+                }
+            }
+
+            // Leer las siguientes líneas como datos
+            while ((line = reader.readLine()) != null && headers != null) {
+                String[] values = line.split("\\s{2,}");
+                Map<String, String> image = new HashMap<>();
+                for (int i = 0; i < headers.length && i < values.length; i++) {
+                    String key = headers[i];
+                    String value = values[i].trim();
+                    image.put("timestamp", generateIsoTimestamp());
+                    image.put(key, value);
+                }
+                images.add(image);
+            }
+
+        } catch (Exception e) {
+            logger.error("Error al listar las imágenes", e);
+        }
+
+        return images;
     }
 
     @Override
