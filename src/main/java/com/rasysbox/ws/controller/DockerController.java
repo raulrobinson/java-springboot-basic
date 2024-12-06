@@ -8,6 +8,8 @@ import com.rasysbox.ws.service.DockerService;
 //import io.swagger.annotations.Api;
 //import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
@@ -102,7 +104,7 @@ public class DockerController {
     @PostMapping("/stats")
 //    @ApiOperation(value = "Get container stats", notes = "Get container stats")
     @Operation(summary = "Get container stats", description = "Get container stats")
-    public ResponseEntity<List<StatsDTO>> getContainerStats(@RequestBody ContainerDTO container) {
+    public ResponseEntity<List<StatsDTO>> getContainerStats(@RequestBody() ContainerDTO container) {
         var stats = service.getContainerStats(container.getContainerId());
         if (stats.isEmpty()) {
             logger.info("No stats found for container {}", container.getContainerId());
@@ -128,7 +130,7 @@ public class DockerController {
     @PostMapping("/create-container")
 //    @ApiOperation(value = "Create container", notes = "Create container")
     @Operation(summary = "Create container", description = "Create container")
-    public ResponseEntity<List<Map<String, String>>> createContainer(@RequestBody CreateContainerDTO request) {
+    public ResponseEntity<List<Map<String, String>>> createContainer(@RequestBody() CreateContainerDTO request) {
         var result = service.createContainer(request);
         if (result.isEmpty()) {
             logger.info("Container {} not created", request.getContainerName());
