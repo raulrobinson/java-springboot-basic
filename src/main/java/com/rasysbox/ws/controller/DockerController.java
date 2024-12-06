@@ -5,8 +5,11 @@ import com.rasysbox.ws.models.dto.CreateContainerDTO;
 import com.rasysbox.ws.models.dto.ImageDTO;
 import com.rasysbox.ws.models.dto.StatsDTO;
 import com.rasysbox.ws.service.DockerService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+//import io.swagger.annotations.Api;
+//import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -18,7 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@Api(tags = "Docker", value = "Docker API")
+//@Api(tags = "Docker", value = "Docker API")
+@Tag(name = "Docker", description = "Docker API")
 @RequestMapping(path = "${controller.properties.base-path}/docker", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DockerController {
     private final Logger logger = org.slf4j.LoggerFactory.getLogger(DockerController.class);
@@ -31,7 +35,8 @@ public class DockerController {
     }
 
     @GetMapping("/containers")
-    @ApiOperation(value = "List all containers", notes = "List all containers")
+//    @ApiOperation(value = "List all containers", notes = "List all containers")
+    @Operation(summary = "List all containers", description = "List all containers")
     public ResponseEntity<List<Map<String, String>>> getContainers() {
         var containers = service.listContainers();
         if (containers.isEmpty()) {
@@ -43,7 +48,8 @@ public class DockerController {
     }
 
     @GetMapping("/name/{containerName}")
-    @ApiOperation(value = "Get container by name", notes = "Get container by name")
+//    @ApiOperation(value = "Get container by name", notes = "Get container by name")
+    @Operation(summary = "Get container by name", description = "Get container by name")
     public ResponseEntity<List<Map<String, String>>> getContainerByName(@PathVariable String containerName) {
         var container = service.getContainerByName(containerName);
         if (container.isEmpty()) {
@@ -55,7 +61,8 @@ public class DockerController {
     }
 
     @PostMapping("/logs")
-    @ApiOperation(value = "Get container logs", notes = "Get container logs")
+//    @ApiOperation(value = "Get container logs", notes = "Get container logs")
+    @Operation(summary = "Get container logs", description = "Get container logs")
     public ResponseEntity<List<Map<String, String>>> getContainerLogs(@RequestBody ContainerDTO container) {
         var logs = service.getContainerLogs(container.getContainerId());
         if (logs.isEmpty()) {
@@ -67,7 +74,8 @@ public class DockerController {
     }
 
     @PostMapping("/stop")
-    @ApiOperation(value = "Stop container", notes = "Stop container")
+//    @ApiOperation(value = "Stop container", notes = "Stop container")
+    @Operation(summary = "Stop container", description = "Stop container")
     public ResponseEntity<List<Map<String, String>>> stopContainer(@RequestBody ContainerDTO container) {
         var result = service.stopContainer(container.getContainerId());
         if (result.isEmpty()) {
@@ -79,7 +87,8 @@ public class DockerController {
     }
 
     @PostMapping("/start")
-    @ApiOperation(value = "Start container", notes = "Start container")
+//    @ApiOperation(value = "Start container", notes = "Start container")
+    @Operation(summary = "Start container", description = "Start container")
     public ResponseEntity<List<Map<String, String>>> startContainer(@RequestBody ContainerDTO container) {
         var result = service.startContainer(container.getContainerId());
         if (result.isEmpty()) {
@@ -91,7 +100,8 @@ public class DockerController {
     }
 
     @PostMapping("/stats")
-    @ApiOperation(value = "Get container stats", notes = "Get container stats")
+//    @ApiOperation(value = "Get container stats", notes = "Get container stats")
+    @Operation(summary = "Get container stats", description = "Get container stats")
     public ResponseEntity<List<StatsDTO>> getContainerStats(@RequestBody ContainerDTO container) {
         var stats = service.getContainerStats(container.getContainerId());
         if (stats.isEmpty()) {
@@ -103,7 +113,8 @@ public class DockerController {
     }
 
     @GetMapping("/images")
-    @ApiOperation(value = "List all images", notes = "List all images")
+//    @ApiOperation(value = "List all images", notes = "List all images")
+    @Operation(summary = "List all images", description = "List all images")
     public ResponseEntity<List<Map<String, String>>> getImages() {
         var images = service.listImages();
         if (images.isEmpty()) {
@@ -115,7 +126,8 @@ public class DockerController {
     }
 
     @PostMapping("/create-container")
-    @ApiOperation(value = "Create container", notes = "Create container")
+//    @ApiOperation(value = "Create container", notes = "Create container")
+    @Operation(summary = "Create container", description = "Create container")
     public ResponseEntity<List<Map<String, String>>> createContainer(@RequestBody CreateContainerDTO request) {
         var result = service.createContainer(request);
         if (result.isEmpty()) {
@@ -127,7 +139,8 @@ public class DockerController {
     }
 
     @DeleteMapping("/remove")
-    @ApiOperation(value = "Remove container", notes = "Remove container")
+//    @ApiOperation(value = "Remove container", notes = "Remove container")
+    @Operation(summary = "Remove container", description = "Remove container")
     public ResponseEntity<List<Map<String, String>>> removeContainer(@RequestBody ContainerDTO container) throws IOException {
         var result = service.removeContainer(container.getContainerId());
         if (result.isEmpty()) {
@@ -139,7 +152,8 @@ public class DockerController {
     }
 
     @DeleteMapping("/remove-image")
-    @ApiOperation(value = "Remove image", notes = "Remove image")
+//    @ApiOperation(value = "Remove image", notes = "Remove image")
+    @Operation(summary = "Remove image", description = "Remove image")
     public ResponseEntity<List<Map<String, String>>> removeImage(@RequestBody ImageDTO image) throws IOException {
         var result = service.removeImage(image.getImageId());
         if (result.isEmpty()) {

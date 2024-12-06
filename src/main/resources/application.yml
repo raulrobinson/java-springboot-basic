@@ -1,0 +1,27 @@
+# General Application configuration
+spring:
+  application:
+    name: @project.name@
+info:
+  project-version: @project.version@
+  build-timestamp: ${maven.build.timestamp}
+controller:
+  properties:
+    base-path: /api/v1
+
+# Swagger
+springdoc:
+  swagger-ui:
+    use-root-path: true
+  properties:
+    developer-mail: 'rasysbox@hotmail.com'
+    developer-name: 'Raul Bolivar Navas'
+    organization-url: 'https://www.rasysbox.com'
+    project-licence-link: 'https://www.rasysbox.com/License'
+    project-licence-msg: 'License'
+    project-name: @project.name@
+    project-short-description: @project.description@
+    project-tos-link: 'https://www.rasysbox.com/TermsOfService'
+    project-tos-msg: 'Terms Of Service'
+    server-host: localhost
+    server-port: 8080
