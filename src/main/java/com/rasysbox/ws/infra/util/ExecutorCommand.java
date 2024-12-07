@@ -1,4 +1,4 @@
-package com.rasysbox.ws.utils;
+package com.rasysbox.ws.infra.util;
 
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.rasysbox.ws.utils.Utilities.generateIsoTimestamp;
+import static com.rasysbox.ws.infra.util.Utilities.generateIsoTimestamp;
 
 @Component
 public class ExecutorCommand {

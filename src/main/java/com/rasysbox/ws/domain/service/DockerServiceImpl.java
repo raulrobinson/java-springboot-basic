@@ -1,7 +1,7 @@
-package com.rasysbox.ws.service;
+package com.rasysbox.ws.domain.service;
 
-import com.rasysbox.ws.models.dto.*;
-import com.rasysbox.ws.utils.ExecutorCommand;
+import com.rasysbox.ws.domain.dto.*;
+import com.rasysbox.ws.infra.util.ExecutorCommand;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-import static com.rasysbox.ws.utils.Utilities.generateIsoTimestamp;
+import static com.rasysbox.ws.infra.util.Utilities.generateIsoTimestamp;
 
 @Service
 public class DockerServiceImpl implements DockerService {

@@ -1,4 +1,4 @@
-package com.rasysbox.ws.utils;
+package com.rasysbox.ws.infra.util;
 
 import org.springframework.stereotype.Component;
 

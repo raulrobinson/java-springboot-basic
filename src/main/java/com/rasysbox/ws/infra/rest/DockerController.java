@@ -1,16 +1,13 @@
-package com.rasysbox.ws.controller;
+package com.rasysbox.ws.infra.rest;
 
-import com.rasysbox.ws.models.dto.ContainerDTO;
-import com.rasysbox.ws.models.dto.CreateContainerDTO;
-import com.rasysbox.ws.models.dto.ImageDTO;
-import com.rasysbox.ws.models.dto.StatsDTO;
-import com.rasysbox.ws.service.DockerService;
+import com.rasysbox.ws.domain.dto.ContainerDTO;
+import com.rasysbox.ws.domain.dto.CreateContainerDTO;
+import com.rasysbox.ws.domain.dto.ImageDTO;
+import com.rasysbox.ws.domain.dto.StatsDTO;
+import com.rasysbox.ws.domain.service.DockerService;
 //import io.swagger.annotations.Api;
 //import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

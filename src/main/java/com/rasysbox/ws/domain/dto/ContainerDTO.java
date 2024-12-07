@@ -1,4 +1,4 @@
-package com.rasysbox.ws.models.dto;
+package com.rasysbox.ws.domain.dto;
 
 import lombok.Getter;
 import lombok.Setter;

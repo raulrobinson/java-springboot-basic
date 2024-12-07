@@ -1,7 +1,7 @@
-package com.rasysbox.ws.service;
+package com.rasysbox.ws.domain.service;
 
-import com.rasysbox.ws.models.dto.CreateContainerDTO;
-import com.rasysbox.ws.models.dto.StatsDTO;
+import com.rasysbox.ws.domain.dto.CreateContainerDTO;
+import com.rasysbox.ws.domain.dto.StatsDTO;
 
 import java.io.IOException;
 import java.util.List;
