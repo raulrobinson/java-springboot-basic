@@ -39,13 +39,9 @@ You can run the application with Docker Compose using the following commands:
 docker-compose up
 ```
 
-## Accessing the application
-
-You can access the application at [http://localhost:8080](http://localhost:8080).
-
 ## Swagger UI
 
-You can access the Swagger UI at [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html).
+You can access the Swagger UI at [http://localhost:8080/java-springboot-basic/swagger-ui/index.html](http://localhost:8080/swagger-ui.html).
 
 ## License
 MIT License

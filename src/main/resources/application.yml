@@ -7,21 +7,23 @@ info:
   build-timestamp: ${maven.build.timestamp}
 controller:
   properties:
-    base-path: /api/v1
+    base-path: /@project.name@/v1
 
-# Swagger
+# OpenAPI Definition
+openapi:
+  service:
+    host: http://localhost:8080
+    title: @project.name@
+    version: @project.version@
+    description: @project.description@
+    contact:
+      name: Raul Bolivar Navas
+      email: rasysbox@hotmail.com
+
+# Swagger Configuration
 springdoc:
+  api-docs:
+    path: /@project.name@/v3/api-docs
   swagger-ui:
-    use-root-path: true
-  properties:
-    developer-mail: 'rasysbox@hotmail.com'
-    developer-name: 'Raul Bolivar Navas'
-    organization-url: 'https://www.rasysbox.com'
-    project-licence-link: 'https://www.rasysbox.com/License'
-    project-licence-msg: 'License'
-    project-name: @project.name@
-    project-short-description: @project.description@
-    project-tos-link: 'https://www.rasysbox.com/TermsOfService'
-    project-tos-msg: 'Terms Of Service'
-    server-host: localhost
-    server-port: 8080
+    path: /@project.name@/swagger-ui.html
+

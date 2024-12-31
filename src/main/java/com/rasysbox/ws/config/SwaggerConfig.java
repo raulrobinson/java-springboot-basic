@@ -1,50 +1,41 @@
 package com.rasysbox.ws.config;
 
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-//import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-//import springfox.documentation.builders.ApiInfoBuilder;
-//import springfox.documentation.builders.RequestHandlerSelectors;
-//import springfox.documentation.service.ApiInfo;
-//import springfox.documentation.service.Contact;
-//import springfox.documentation.spi.DocumentationType;
-//import springfox.documentation.spring.web.plugins.Docket;
-//import springfox.documentation.swagger2.annotations.EnableSwagger2;
-//
-//import static springfox.documentation.builders.PathSelectors.regex;
-//
-//@Configuration
-//@EnableSwagger2
-public class SwaggerConfig {//extends WebMvcConfigurationSupport {
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-//    @Bean
-//    public Docket productApi() {
-//        return new Docket(DocumentationType.SWAGGER_2)
-//                .select()
-//                .apis(RequestHandlerSelectors.basePackage("com.rasysbox.ws"))
-//                .paths(regex("/.*"))
-//                .build()
-//                .apiInfo(metaData());
-//    }
-//
-//    private ApiInfo metaData() {
-//        return new ApiInfoBuilder()
-//                .title("API Docker")
-//                .description("Service for Docker Command Management")
-//                .version("1.0.0")
-//                .license("Apache License Version 2.0")
-//                .licenseUrl("https://www.apache.org/licenses/LICENSE-2.0")
-//                .contact(new Contact("Raul Bolivar Navas", "github.com/raulrobinson", "rasysbox@hotmail.com"))
-//                .build();
-//    }
-//
-//    @Override
-//    protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        registry.addResourceHandler("swagger-ui.html")
-//                .addResourceLocations("classpath:/META-INF/resources/");
-//
-//        registry.addResourceHandler("/webjars/**")
-//                .addResourceLocations("classpath:/META-INF/resources/webjars/");
-//    }
+import java.util.List;
+
+@Configuration
+public class SwaggerConfig {
+    @Bean
+    public OpenAPI myOpenAPI(
+            @Value("${openapi.service.title}") String serviceTitle,
+            @Value("${openapi.service.version}") String serviceVersion,
+            @Value("${openapi.service.description}") String description,
+            @Value("${openapi.service.contact.email}") String contactEmail,
+            @Value("${openapi.service.contact.name}") String contactName,
+            @Value("${openapi.service.host}") String host) {
+        Contact contact = new Contact()
+                .email(contactEmail)
+                .name(contactName);
+        License mitLicense = new License()
+                .name("MIT License")
+                .url("https://opensource.org/licenses/MIT");
+        Info info = new Info()
+                .title(serviceTitle)
+                .version(serviceVersion)
+                .contact(contact)
+                .description(description)
+                .termsOfService("https://opensource.org/licenses/MIT")
+                .license(mitLicense);
+        return new OpenAPI()
+                .servers(List.of(new Server().url(host).description(description)))
+                .info(info);
+    }
 }
